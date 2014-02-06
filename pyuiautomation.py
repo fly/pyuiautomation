@@ -218,6 +218,11 @@ class _UIAutomationElement(object):
         return [_UIAutomationElement(IUIAutomationElementArray.GetElement(i)) for i in
                 xrange(IUIAutomationElementArray.Length)]
 
+    def Invoke(self):
+        IUnknown = self.IUIAutomationElement.GetCurrentPattern(UIAutomationClient.UIA_InvokePatternId)
+        IUIAutomationInvokePattern = IUnknown.QueryInterface(UIAutomationClient.IUIAutomationInvokePattern)
+        IUIAutomationInvokePattern.Invoke()
+
     def __str__(self):
         return '<%s (Name: %s, Class: %s, AutomationId: %s>' % (
             self.CurrentControlTypeName, self.CurrentName, self.CurrentClassName, self.CurrentAutomationId)
