@@ -244,9 +244,9 @@ class _UIAutomationElement(object):
         while queue:
             element, xml_node = queue.pop(0)
             xml_element = minidom.Element(element.CurrentControlTypeName)
-            xml_element.attributes['Name'] = str(element.CurrentName)
-            xml_element.attributes['AutomationId'] = str(element.CurrentAutomationId)
-            xml_element.attributes['ClassName'] = str(element.CurrentClassName)
+            xml_element.setAttribute('Name', str(element.CurrentName))
+            xml_element.setAttribute('AutomationId', str(element.CurrentAutomationId))
+            xml_element.setAttribute('ClassName', str(element.CurrentClassName))
             xml_element.ownerDocument = xml
             xml_node.appendChild(xml_element)
             for child in element.findall('children'):
