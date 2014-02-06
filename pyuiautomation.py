@@ -227,5 +227,5 @@ def ElementFromHandle(handle):
     return _UIAutomationElement(_IUIAutomation.ElementFromHandle(handle))
 
 
-def gGetRootElement():
+def GetRootElement():
     return _UIAutomationElement(_IUIAutomation.GetRootElement())
