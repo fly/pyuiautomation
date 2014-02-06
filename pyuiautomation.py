@@ -1,3 +1,5 @@
+from xml.dom import minidom
+
 import comtypes
 import comtypes.client
 
@@ -226,6 +228,21 @@ class _UIAutomationElement(object):
     def __str__(self):
         return '<%s (Name: %s, Class: %s, AutomationId: %s>' % (
             self.CurrentControlTypeName, self.CurrentName, self.CurrentClassName, self.CurrentAutomationId)
+
+    def toxml(self):
+        xml = minidom.Document()
+        queue = [(self, xml)]
+        while queue:
+            element, xml_node = queue.pop(0)
+            xml_element = minidom.Element(element.CurrentControlTypeName)
+            xml_element.attributes['Name'] = str(element.CurrentName)
+            xml_element.attributes['AutomationId'] = str(element.CurrentAutomationId)
+            xml_element.attributes['ClassName'] = str(element.CurrentClassName)
+            xml_element.ownerDocument = xml
+            xml_node.appendChild(xml_element)
+            for child in element.findall('children'):
+                queue.append((child, xml_element))
+        return xml.toprettyxml()
 
 
 def ElementFromHandle(handle):
