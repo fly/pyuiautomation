@@ -73,6 +73,7 @@ class _UIAutomationElement(object):
         :rtype : unicode
         """
         return self.IUIAutomationElement.CurrentAutomationId
+
     AutomationId = CurrentAutomationId
 
     @property
@@ -85,6 +86,7 @@ class _UIAutomationElement(object):
         """
         rect = self.IUIAutomationElement.CurrentBoundingRectangle
         return rect.left, rect.top, rect.right, rect.bottom
+
     BoundingRectangle = CurrentBoundingRectangle
 
     @property
@@ -94,6 +96,7 @@ class _UIAutomationElement(object):
         :rtype : unicode
         """
         return self.IUIAutomationElement.CurrentClassName
+
     ClassName = CurrentClassName
 
     @property
@@ -103,6 +106,7 @@ class _UIAutomationElement(object):
         :rtype : int
         """
         return self.IUIAutomationElement.CurrentControlType
+
     ControlType = CurrentControlType
 
     @property
@@ -114,6 +118,7 @@ class _UIAutomationElement(object):
         :rtype : str
         """
         return _control_type[self.CurrentControlType]
+
     ControlTypeName = CurrentControlTypeName
 
     @property
@@ -123,6 +128,7 @@ class _UIAutomationElement(object):
         :rtype : bool
         """
         return bool(self.IUIAutomationElement.CurrentIsEnabled)
+
     IsEnabled = CurrentIsEnabled
 
     @property
@@ -132,6 +138,7 @@ class _UIAutomationElement(object):
         :rtype : unicode
         """
         return self.IUIAutomationElement.CurrentName
+
     Name = CurrentName
 
     def GetClickablePoint(self):
