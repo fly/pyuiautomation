@@ -3,6 +3,8 @@ from xml.dom import minidom
 import comtypes
 import comtypes.client
 
+__version__ = '1.0.0'
+
 UIAutomationClient = comtypes.client.GetModule('UIAutomationCore.dll')
 
 # noinspection PyProtectedMember
