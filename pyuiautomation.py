@@ -1,3 +1,4 @@
+from collections import deque
 from xml.dom import minidom
 
 import comtypes
@@ -240,9 +241,10 @@ class _UIAutomationElement(object):
 
     def toxml(self):
         xml = minidom.Document()
-        queue = [(self, xml)]
+        queue = deque()
+        queue.append((self, xml))
         while queue:
-            element, xml_node = queue.pop(0)
+            element, xml_node = queue.popleft()
             xml_element = minidom.Element(element.CurrentControlTypeName)
             xml_element.setAttribute('Name', str(element.CurrentName))
             xml_element.setAttribute('AutomationId', str(element.CurrentAutomationId))
