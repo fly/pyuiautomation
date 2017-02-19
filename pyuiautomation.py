@@ -1,17 +1,28 @@
+from __future__ import print_function, unicode_literals
+import sys
 from collections import deque
 from xml.dom import minidom
 
 import comtypes
 import comtypes.client
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
+
+PY_3 = sys.version_info > (3,)
+
+if not PY_3:
+    range = xrange
+    str = unicode
+
 
 UIAutomationClient = comtypes.client.GetModule('UIAutomationCore.dll')
 
 # noinspection PyProtectedMember
-_IUIAutomation = comtypes.CoCreateInstance(UIAutomationClient.CUIAutomation._reg_clsid_,
-                                           interface=UIAutomationClient.IUIAutomation,
-                                           clsctx=comtypes.CLSCTX_INPROC_SERVER)
+_IUIAutomation = comtypes.CoCreateInstance(
+    UIAutomationClient.CUIAutomation._reg_clsid_,
+    interface=UIAutomationClient.IUIAutomation,
+    clsctx=comtypes.CLSCTX_INPROC_SERVER
+)
 
 _control_type = {
     UIAutomationClient.UIA_ButtonControlTypeId: 'UIA_ButtonControlTypeId',
@@ -81,7 +92,8 @@ class _UIAutomationElement(object):
 
     @property
     def CurrentBoundingRectangle(self):
-        """Retrieves the coordinates of the rectangle that completely encloses the element.
+        """Retrieves the coordinates of the rectangle that completely encloses
+            the element.
 
         Returns tuple (left, top, right, bottom)
 
@@ -147,7 +159,8 @@ class _UIAutomationElement(object):
     def GetClickablePoint(self):
         """Retrieves a point on the element that can be clicked
 
-        Returns tuple (x, y) if a clickable point was retrieved, or None otherwise
+        Returns tuple (x, y) if a clickable point was retrieved,
+            or None otherwise
 
         :rtype : tuple
         """
@@ -161,37 +174,51 @@ class _UIAutomationElement(object):
         condition = _IUIAutomation.CreateTrueCondition()
 
         if Name is not None:
-            name_condition = _IUIAutomation.CreatePropertyCondition(UIAutomationClient.UIA_NamePropertyId, Name)
-            condition = _IUIAutomation.CreateAndCondition(condition, name_condition)
+            name_condition = _IUIAutomation.CreatePropertyCondition(
+                UIAutomationClient.UIA_NamePropertyId, Name
+            )
+            condition = _IUIAutomation.CreateAndCondition(
+                condition, name_condition
+            )
 
         if ControlType is not None:
             control_type_condition = _IUIAutomation.CreatePropertyCondition(
-                UIAutomationClient.UIA_ControlTypePropertyId, ControlType)
-            condition = _IUIAutomation.CreateAndCondition(condition, control_type_condition)
+                UIAutomationClient.UIA_ControlTypePropertyId, ControlType
+            )
+            condition = _IUIAutomation.CreateAndCondition(
+                condition, control_type_condition
+            )
 
         if AutomationId is not None:
             automation_id_condition = _IUIAutomation.CreatePropertyCondition(
                 UIAutomationClient.UIA_AutomationIdPropertyId, AutomationId)
-            condition = _IUIAutomation.CreateAndCondition(condition, automation_id_condition)
+            condition = _IUIAutomation.CreateAndCondition(
+                condition, automation_id_condition
+            )
 
         return condition
 
-    def findfirst(self, tree_scope, Name=None, ControlType=None, AutomationId=None):
-        """Retrieves the first child or descendant element that matches specified conditions
+    def findfirst(self, tree_scope, Name=None, ControlType=None,
+                  AutomationId=None):
+        """Retrieves the first child or descendant element that matches
+            specified conditions
 
         Returns None if there is no element that matches specified conditions
         If Name is None, element with any name will match
         If ControlType is None, element with any control type will match
 
-        :param tree_scope: Should be one of 'element', 'children', 'descendants', 'parent', 'ancestors', 'subtree'.
+        :param tree_scope: Should be one of 'element', 'children',
+            'descendants', 'parent', 'ancestors', 'subtree'.
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee671699(v=vs.85).aspx
         :type tree_scope: str
         :param Name: Name of the element.
         :type Name: str
-        :param ControlType: Control type of the element (one of UIAutomationClient.UIA_*ControlTypeId).
+        :param ControlType: Control type of the element
+            (one of UIAutomationClient.UIA_*ControlTypeId).
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee671198(v=vs.85).aspx
         :type ControlType: int
-        :param AutomationId: UI Automation identifier (ID) for the automation element.
+        :param AutomationId: UI Automation identifier (ID)
+            for the automation element.
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee695997(v=vs.85).aspx
         :type AutomationId: str
 
@@ -202,22 +229,28 @@ class _UIAutomationElement(object):
         element = self.IUIAutomationElement.FindFirst(tree_scope, condition)
         return _UIAutomationElement(element) if element else None
 
-    def findall(self, tree_scope, Name=None, ControlType=None, AutomationId=None):
-        """Returns list of UI Automation elements that satisfy specified conditions
+    def findall(self, tree_scope, Name=None, ControlType=None,
+                AutomationId=None):
+        """Returns list of UI Automation elements that satisfy specified
+            conditions
 
-        Returns empty list if there are no elements that matches specified conditions
+        Returns empty list if there are no elements that matches specified
+        conditions.
         If Name is None, elements with any name will match
         If ControlType is None, elements with any control type will match
 
-        :param tree_scope: Should be one of 'element', 'children', 'descendants', 'parent', 'ancestors', 'subtree'.
+        :param tree_scope: Should be one of 'element', 'children',
+            'descendants', 'parent', 'ancestors', 'subtree'.
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee671699(v=vs.85).aspx
         :type tree_scope: str
         :param Name: Name of the element.
         :type Name: str
-        :param ControlType: Control type of the element (one of UIAutomationClient.UIA_*ControlTypeId).
+        :param ControlType: Control type of the element
+            (one of UIAutomationClient.UIA_*ControlTypeId).
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee671198(v=vs.85).aspx
         :type ControlType: int
-        :param AutomationId: UI Automation identifier (ID) for the automation element.
+        :param AutomationId: UI Automation identifier (ID) for the automation
+            element.
             Ref: http://msdn.microsoft.com/en-us/library/windows/desktop/ee695997(v=vs.85).aspx
         :type AutomationId: str
 
@@ -226,18 +259,22 @@ class _UIAutomationElement(object):
         tree_scope = _tree_scope[tree_scope]
         condition = self._build_condition(Name, ControlType, AutomationId)
 
-        IUIAutomationElementArray = self.IUIAutomationElement.FindAll(tree_scope, condition)
-        return [_UIAutomationElement(IUIAutomationElementArray.GetElement(i)) for i in
-                xrange(IUIAutomationElementArray.Length)]
+        IUIAutomationElementArray = self.IUIAutomationElement.FindAll(
+            tree_scope, condition)
+        return [_UIAutomationElement(IUIAutomationElementArray.GetElement(i))
+                for i in range(IUIAutomationElementArray.Length)]
 
     def Invoke(self):
-        IUnknown = self.IUIAutomationElement.GetCurrentPattern(UIAutomationClient.UIA_InvokePatternId)
-        IUIAutomationInvokePattern = IUnknown.QueryInterface(UIAutomationClient.IUIAutomationInvokePattern)
+        IUnknown = self.IUIAutomationElement.GetCurrentPattern(
+            UIAutomationClient.UIA_InvokePatternId)
+        IUIAutomationInvokePattern = IUnknown.QueryInterface(
+            UIAutomationClient.IUIAutomationInvokePattern)
         IUIAutomationInvokePattern.Invoke()
 
     def __str__(self):
         return '<%s (Name: %s, Class: %s, AutomationId: %s>' % (
-            self.CurrentControlTypeName, self.CurrentName, self.CurrentClassName, self.CurrentAutomationId)
+            self.CurrentControlTypeName, self.CurrentName,
+            self.CurrentClassName, self.CurrentAutomationId)
 
     def toxml(self):
         xml = minidom.Document()
@@ -247,8 +284,10 @@ class _UIAutomationElement(object):
             element, xml_node = queue.popleft()
             xml_element = minidom.Element(element.CurrentControlTypeName)
             xml_element.setAttribute('Name', str(element.CurrentName))
-            xml_element.setAttribute('AutomationId', str(element.CurrentAutomationId))
-            xml_element.setAttribute('ClassName', str(element.CurrentClassName))
+            xml_element.setAttribute('AutomationId',
+                                     str(element.CurrentAutomationId))
+            xml_element.setAttribute('ClassName',
+                                     str(element.CurrentClassName))
             xml_element.ownerDocument = xml
             xml_node.appendChild(xml_element)
             for child in element.findall('children'):
